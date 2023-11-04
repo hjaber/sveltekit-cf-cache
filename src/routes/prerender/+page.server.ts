@@ -5,7 +5,8 @@ export const load = (async ({ fetch, setHeaders }) => {
   const data = await fetch("https://uuid.rocks/json");
   const uuid: uuidJson = await data.json();
   setHeaders({
-    "CDN-Cache-Control": "public, max-age=14400",
+    "Cache-Control": "public, max-age=14400",
+    "CDN-Cache-Control": "max-age=14400",
   });
 
   return { uuid };
