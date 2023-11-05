@@ -4,32 +4,11 @@
   export let data;
 
   let dateAndTime = "Waiting two seconds for client render...";
-  let serverDateAndTime = "Fetching server date and time...";
-
-  const fetchServerTime = async () => {
-    try {
-      const response = await fetch("/client", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-      if (response.ok) {
-        const { serverTime } = await response.json();
-        serverDateAndTime = `Server date and time: ${new Date(
-          serverTime
-        ).toLocaleString()}`;
-      } else {
-        console.error("Failed to fetch server time");
-      }
-    } catch (error) {
-      console.error("Error fetching server time:", error);
-    }
-  };
 
   onMount(() => {
     setTimeout(() => {
       dateAndTime = `Client rendered at ${new Date().toLocaleString()}`;
     }, 2000);
-    fetchServerTime();
   });
 </script>
 
@@ -42,4 +21,3 @@
 <pre>"CDN-Cache-Control": "public, max-age=14400"</pre>
 
 <p>{dateAndTime}</p>
-<p>{serverDateAndTime}</p>
