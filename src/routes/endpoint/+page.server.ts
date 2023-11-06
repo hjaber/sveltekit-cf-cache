@@ -1,7 +1,7 @@
 // src/routes/endpoint/+page.server.ts
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ fetch, setHeaders }) => {
+export const load = (async ({ fetch }) => {
   const data = await fetch("https://uuid.rocks/json");
   const dynamicUuid: uuidJson = await data.json();
   const cachedData = await fetch("/api/uuid");
