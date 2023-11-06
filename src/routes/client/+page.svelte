@@ -6,6 +6,8 @@
   let dateAndTime = "Waiting two seconds for client render...";
   let serverDateAndTime = "Fetching server date and time...";
   let serverUuid = "Fetching server uuid...";
+  let fetchDuration = 0;
+
   const fetchServerTime = async () => {
     const response = await fetch("/api/timestamp");
     const { serverTime } = await response.json();
@@ -15,8 +17,11 @@
   };
 
   const fetchUuid = async () => {
+    const startTime = performance.now();
     const response = await fetch("/api/uuid");
-    return (serverUuid = await response.json());
+    serverUuid = await response.json();
+    const endTime = performance.now();
+    fetchDuration = Math.round(endTime - startTime);
   };
 
   onMount(() => {
@@ -40,3 +45,4 @@
 <p>{serverDateAndTime}</p>
 <p>Server uuid:</p>
 <pre>{JSON.stringify(serverUuid, null, 2)}</pre>
+<p>Fetch UUID duration: {fetchDuration} ms</p>
