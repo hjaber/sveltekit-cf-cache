@@ -4,7 +4,7 @@
   <a href="headers">Headers</a>
   <a href="/dynamic">Dynamic</a>
   <a href="/prerender">Prerender</a>
-  <a href="/client">Client</a>
+  <a href="/endpoint">endpoint</a>
 </nav>
 <slot />
 
