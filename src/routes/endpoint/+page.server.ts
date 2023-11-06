@@ -7,11 +7,6 @@ export const load = (async ({ fetch, setHeaders }) => {
   const cachedData = await fetch("/api/uuid");
   const cachedUuid: uuidJson = await cachedData.json();
 
-  setHeaders({
-    "Cache-Control": "public, max-age=14400",
-    "CDN-Cache-Control": "max-age=14400",
-  });
-
   return { cachedUuid, dynamicUuid };
 }) satisfies PageServerLoad;
 
