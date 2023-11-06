@@ -4,8 +4,24 @@
   export let data;
 
   let dateAndTime = "Waiting two seconds for client render...";
+  let serverDateAndTime = "Fetching server date and time...";
+  let serverUuid = "Fetching server uuid...";
+  const fetchServerTime = async () => {
+    const response = await fetch("/api/timestamp");
+    const { serverTime } = await response.json();
+    serverDateAndTime = `Server date and time: ${new Date(
+      serverTime
+    ).toLocaleString()}`;
+  };
+
+  const fetchUuid = async () => {
+    const response = await fetch("/api/uuid");
+    return (serverUuid = await response.json());
+  };
 
   onMount(() => {
+    fetchServerTime();
+    fetchUuid();
     setTimeout(() => {
       dateAndTime = `Client rendered at ${new Date().toLocaleString()}`;
     }, 2000);
@@ -21,3 +37,6 @@
 <pre>"CDN-Cache-Control": "public, max-age=14400"</pre>
 
 <p>{dateAndTime}</p>
+<p>{serverDateAndTime}</p>
+<p>Server uuid:</p>
+<pre>{JSON.stringify(serverUuid, null, 2)}</pre>
