@@ -2,9 +2,12 @@
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ fetch }) => {
-  const data = await fetch("https://uuid.rocks/json");
-  const dynamicUuid: uuidJson = await data.json();
-  const cachedData = await fetch("/api/uuid");
+  const [dynamicData, cachedData] = await Promise.all([
+    fetch("https://uuid.rocks/json"),
+    fetch("/api/uuid"),
+  ]);
+
+  const dynamicUuid: uuidJson = await dynamicData.json();
   const cachedUuid: uuidJson = await cachedData.json();
 
   return { cachedUuid, dynamicUuid };
