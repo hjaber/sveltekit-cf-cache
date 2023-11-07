@@ -1,5 +1,24 @@
 // src/routes/endpoint/+page.server.ts
+import { dev } from "$app/environment";
 import type { PageServerLoad } from "./$types";
+
+const cachedApiUrl = dev
+  ? "http://localhost:3000/api/uuid"
+  : "https://demo.tripcafe.org/api/uuid";
+
+export const load: PageServerLoad = async ({ fetch }) => {
+  const [dynamicResult, cachedResult] = await Promise.all([
+    fetchWithPerformance("https://uuid.rocks/json", fetch),
+    fetchWithPerformance(cachedApiUrl, fetch),
+  ]);
+
+  return {
+    dynamicUuid: dynamicResult[0],
+    dynamicDuration: dynamicResult[1],
+    cachedUuid: cachedResult[0],
+    cachedDuration: cachedResult[1],
+  };
+};
 
 type uuidJson = {
   apiVersion: string;
@@ -20,17 +39,3 @@ async function fetchWithPerformance(
   const endTime = performance.now();
   return [data, Math.round(endTime - startTime)];
 }
-
-export const load: PageServerLoad = async ({ fetch }) => {
-  const [dynamicResult, cachedResult] = await Promise.all([
-    fetchWithPerformance("https://uuid.rocks/json", fetch),
-    fetchWithPerformance("/api/uuid", fetch),
-  ]);
-
-  return {
-    dynamicUuid: dynamicResult[0],
-    dynamicDuration: dynamicResult[1],
-    cachedUuid: cachedResult[0],
-    cachedDuration: cachedResult[1],
-  };
-};
