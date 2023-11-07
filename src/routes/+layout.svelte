@@ -1,5 +1,11 @@
+<script lang="ts">
+  import type { LayoutData } from "./$types";
+
+  export let data: LayoutData;
+</script>
+
 <nav>
-  <a href="/">Home</a>
+  <a href="/">{data.timestamp}</a>
   <a href="/static">Static</a>
   <a href="headers">Headers</a>
   <a href="/dynamic">Dynamic</a>

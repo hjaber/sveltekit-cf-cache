@@ -1,8 +1,6 @@
 // src/routes/api/uuid/+server.ts
 import { json, type RequestHandler } from "@sveltejs/kit";
 
-export const prerender = true;
-
 export const GET: RequestHandler = async ({ setHeaders }) => {
   const data = await fetch("https://uuid.rocks/json");
   const uuid: uuidJson = await data.json();
