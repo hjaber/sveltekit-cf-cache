@@ -10,22 +10,27 @@ type uuidJson = {
   timestamp: string;
 };
 
+async function fetchWithPerformance(
+  url: string,
+  fetch: any
+): Promise<[uuidJson, number]> {
+  const startTime = performance.now();
+  const response = await fetch(url);
+  const data: uuidJson = await response.json();
+  const endTime = performance.now();
+  return [data, Math.round(endTime - startTime)];
+}
+
 export const load: PageServerLoad = async ({ fetch }) => {
-  const startTimeDynamic = performance.now();
-  const dynamicData = await fetch("https://uuid.rocks/json");
-  const endTimeDynamic = performance.now();
-
-  const startTimeCached = performance.now();
-  const cachedData = await fetch("/api/uuid");
-  const endTimeCached = performance.now();
-
-  const dynamicUuid: uuidJson = await dynamicData.json();
-  const cachedUuid: uuidJson = await cachedData.json();
+  const [dynamicResult, cachedResult] = await Promise.all([
+    fetchWithPerformance("https://uuid.rocks/json", fetch),
+    fetchWithPerformance("/api/uuid", fetch),
+  ]);
 
   return {
-    cachedUuid,
-    dynamicUuid,
-    dynamicDuration: Math.round(endTimeDynamic - startTimeDynamic),
-    cachedDuration: Math.round(endTimeCached - startTimeCached),
+    dynamicUuid: dynamicResult[0],
+    dynamicDuration: dynamicResult[1],
+    cachedUuid: cachedResult[0],
+    cachedDuration: cachedResult[1],
   };
 };
