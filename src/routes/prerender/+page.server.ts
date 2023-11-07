@@ -1,5 +1,4 @@
 import type { PageServerLoad } from "./$types";
-export const prerender = "auto";
 
 export const load = (async ({ fetch, setHeaders }) => {
   const data = await fetch("https://uuid.rocks/json");
