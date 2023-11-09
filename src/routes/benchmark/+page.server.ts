@@ -2,8 +2,16 @@
 import { dev } from "$app/environment";
 import type { PageServerLoad } from "../client/$types";
 
+// Helper function to delay subsequent calls
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const load: PageServerLoad = async ({ fetch }) => {
-  const apiNames = ["dynamic", "dynamic-cache-headers", "prerender"];
+  const apiNames = [
+    "dynamic",
+    "dynamic-cache-headers",
+    "prerender",
+    "prerender-cache-headers",
+  ];
 
   // Local external endpoints
   const localBaseURL = "http://localhost:5173/api";
@@ -20,28 +28,28 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
   const numberOfTests = 5;
   const fetchWithTiming = async (url: string) => {
-    const times = [];
+    const times: (number | null)[] = [];
     for (let i = 0; i < numberOfTests; i++) {
+      if (i > 0) await delay(500); // 500ms delay between each call, except before the first call
       const start = performance.now();
       try {
         await fetch(url);
       } catch (error) {
         console.error(`Error fetching ${url}:`, error);
-        // Fill the remaining tests with null to indicate failure
-        while (times.length < numberOfTests) {
-          times.push(null);
-        }
-        break;
+        times.push(null);
+        continue; // Skip to the next iteration
       }
       const end = performance.now();
-      times.push(end - start);
+      times.push(end - start); // Individual times recorded, not cumulative
     }
+    const validTimes = times.filter((t): t is number => t !== null);
     return {
       endpoint: url,
       times: times,
       average:
-        times.filter((t) => t !== null).reduce((a, b) => a + b, 0) /
-        times.filter((t) => t !== null).length,
+        validTimes.length > 0
+          ? validTimes.reduce((a, b) => a + b) / validTimes.length
+          : null,
     };
   };
 
@@ -52,9 +60,9 @@ export const load: PageServerLoad = async ({ fetch }) => {
 
   // Sort results into a record for easy access
   const endpointTimes = results.reduce((acc, { endpoint, times, average }) => {
-    acc[endpoint] = { times, average };
+    acc[endpoint] = { times, average: average ?? "Error" };
     return acc;
-  }, {} as Record<string, { times: number[]; average: number }>);
+  }, {} as Record<string, { times: (number | null)[]; average: number | "Error" }>);
 
   return { endpointTimes };
 };

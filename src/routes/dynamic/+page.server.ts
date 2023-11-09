@@ -1,6 +1,6 @@
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ fetch, setHeaders }) => {
+export const load = (async ({ fetch }) => {
   const data = await fetch("https://uuid.rocks/json");
   const uuid: uuidJson = await data.json();
   // setHeaders({

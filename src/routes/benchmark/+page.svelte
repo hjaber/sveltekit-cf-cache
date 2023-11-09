@@ -3,13 +3,25 @@
 
   export let data: PageData;
 
-  // Helper function to format endpoint names for display
+  // Simplified helper function to format endpoint names for display
   function formatEndpointName(endpoint: string) {
-    return endpoint
-      .replace("http://localhost:5173", "internal-")
-      .replace("https://demo.tripcafe.org", "internal-")
-      .replace("/api/", "");
+    return endpoint.startsWith("/api/")
+      ? `Internal ${endpoint.replace("/api/", "")}`
+      : `External ${endpoint.split("/api/").pop()}`;
   }
+
+  // Helper function to filter out error strings and parse the remaining numbers
+  function filterNumbers(arr: (number | "Error")[]): number[] {
+    return arr.filter((item): item is number => item !== "Error");
+  }
+
+  // Compute the fastest and slowest times while excluding "Error" values
+  let fastest = Math.min(
+    ...filterNumbers(Object.values(data.endpointTimes).map((et) => et.average))
+  );
+  let slowest = Math.max(
+    ...filterNumbers(Object.values(data.endpointTimes).map((et) => et.average))
+  );
 </script>
 
 <div class="benchmark-container">
@@ -33,16 +45,10 @@
 
       <!-- Display the average time, highlighting the fastest and slowest -->
       <div
-        class:fastest={average ===
-          Math.min(
-            ...Object.values(data.endpointTimes).map((et) => et.average)
-          )}
-        class:slowest={average ===
-          Math.max(
-            ...Object.values(data.endpointTimes).map((et) => et.average)
-          )}
+        class:fastest={average !== "Error" && average === fastest}
+        class:slowest={average !== "Error" && average === slowest}
       >
-        {average !== null ? Math.round(average) : "Error"}
+        {average !== "Error" ? Math.round(average) : average}
       </div>
     {/each}
   </div>

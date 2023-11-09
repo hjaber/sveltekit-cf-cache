@@ -1,10 +1,15 @@
-// src/routes/api/prerender/+server.ts
+// src/routes/api/prerender-cache-headers/+server.ts
 import { json, type RequestHandler } from "@sveltejs/kit";
 export const prerender = true;
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ setHeaders }) => {
   const response = await fetch("https://httpbin.org/delay/0.3");
   const data: dataJson = await response.json();
+  setHeaders({
+    "Content-Type": "application/json",
+    "cache-control": "public, max-age=7200, stale-while-revalidate=3600",
+    "cdn-cache-control": "max-age=7200, stale-while-revalidate=3600",
+  });
   return json({
     data,
   });
