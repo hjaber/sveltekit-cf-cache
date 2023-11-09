@@ -6,6 +6,7 @@ export const GET: RequestHandler = async ({ setHeaders }) => {
   const data = await fetch("https://uuid.rocks/json");
   const uuid: uuidJson = await data.json();
   setHeaders({
+    "Content-Type": "application/json",
     "cache-control": "public, max-age=7200, stale-while-revalidate=3600",
     "cdn-cache-control": "max-age=7200, stale-while-revalidate=3600",
   });
