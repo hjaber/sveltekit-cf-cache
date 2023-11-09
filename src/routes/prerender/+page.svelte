@@ -1,5 +1,4 @@
 <script lang="ts">
-  export const prerender = "auto";
   export let data;
 </script>
 
