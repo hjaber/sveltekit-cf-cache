@@ -3,13 +3,14 @@ import { dev } from "$app/environment";
 import type { PageServerLoad } from "./$types";
 
 const cachedApiUrl = dev
-  ? "http://localhost:3000/api/uuid"
+  ? "http://localhost:5173/api/uuid"
   : "https://demo.tripcafe.org/api/uuid";
 
 export const load: PageServerLoad = async ({ fetch }) => {
-  const [dynamicResult, cachedResult] = await Promise.all([
+  const [dynamicResult, cachedResult, internalUrl] = await Promise.all([
     fetchWithPerformance("https://uuid.rocks/json", fetch),
     fetchWithPerformance(cachedApiUrl, fetch),
+    fetchWithPerformance("/api/uuid", fetch),
   ]);
 
   return {
@@ -17,6 +18,8 @@ export const load: PageServerLoad = async ({ fetch }) => {
     dynamicDuration: dynamicResult[1],
     cachedUuid: cachedResult[0],
     cachedDuration: cachedResult[1],
+    internalUuid: internalUrl[0],
+    internalDuration: internalUrl[1],
   };
 };
 
