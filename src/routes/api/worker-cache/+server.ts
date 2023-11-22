@@ -5,15 +5,12 @@ export const GET: RequestHandler = async ({ platform }) => {
   const cacheTtl = 180; // Attempt to set cache TTL to 180 seconds
 
   // The following is a speculative attempt; typically, platform.cf doesn't provide this capability.
-  const response = await fetch(
-    "https://cached-db-worker.luna-heavy.workers.dev/",
-    {
-      cf: {
-        cacheTtl: cacheTtl,
-        cacheEverything: true,
-      },
-    }
-  );
+  const response = await fetch("https://httpbin.org/delay/0.3", {
+    cf: {
+      cacheTtl: cacheTtl,
+      cacheEverything: true,
+    },
+  });
   const platformObj = JSON.stringify(platform.cf);
   const data: dataJson = await response.json();
   return json({
