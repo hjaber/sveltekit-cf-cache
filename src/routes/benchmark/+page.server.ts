@@ -8,6 +8,7 @@ export const load: PageServerLoad = async ({ fetch }) => {
     "dynamic-cache-headers",
     "prerender",
     "prerender-cache-headers",
+    "worker-cache",
   ];
 
   const localBaseURL = "http://localhost:5173/api";

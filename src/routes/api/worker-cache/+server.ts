@@ -12,10 +12,12 @@ export const GET: RequestHandler = async ({ platform }) => {
     },
   });
   const platformObj = JSON.stringify(platform.cf);
+  const caches = platform?.caches;
   const data: dataJson = await response.json();
   return json({
     data,
     platformObj,
+    caches,
   });
 };
 
