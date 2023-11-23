@@ -11,18 +11,9 @@ export const GET: RequestHandler = async ({ request }) => {
     },
   });
   await response.json();
-  const country = request.headers.get("CF-IPCountry");
-
-  const cachedTime = new Date().toLocaleString("en-US", {
-    timeZone: country || "UTC",
-  });
-
-  const currentTime = new Date().toLocaleString("en-US", {
-    timeZone: country || "UTC",
-  });
+  const cachedTime = new Date().toUTCString();
 
   return json({
-    cachedTime: `Cached at: ${cachedTime}`,
-    currentTime: `Current time: ${currentTime}`,
+    cachedTime: `Cached at: ${cachedTime} UTC`,
   });
 };
