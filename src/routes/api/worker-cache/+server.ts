@@ -1,33 +1,46 @@
 // src/routes/api/worker-cache/+server.ts
 import { json, type RequestHandler } from "@sveltejs/kit";
 
-export const GET: RequestHandler = async ({ request }) => {
-  const cacheTtl = 60; // set cache TTL to 1 min
+export const GET: RequestHandler = async ({ platform }) => {
+  const cacheTtl = 60; // Attempt to set cache TTL to 1 min
 
-  // Parallel fetching of both resources
-  const [httpbinResponse, uuidRocksResponse] = await Promise.all([
-    fetch("https://httpbin.org/delay/0.3", {
-      cf: {
-        cacheTtl: cacheTtl,
-        cacheEverything: true,
-      },
-    }),
-    fetch("https://uuid.rocks/json", {
-      cf: {
-        cacheTtl: cacheTtl,
-        cacheEverything: true,
-      },
-    }),
-  ]);
-
-  // Parsing the JSON responses
-  await httpbinResponse.json(); // Assuming this is still needed for side effects
-  const currentTimeData = await uuidRocksResponse.json();
-  const cachedTime = new Date(currentTimeData.timestamp).toUTCString();
-  const currentTime = new Date().toUTCString();
-
-  return json({
-    currentTime: `Current time: ${currentTime}`,
-    cachedTime: `Cached time: ${cachedTime}`,
+  const response = await fetch("https://httpbin.org/delay/0.3", {
+    cf: {
+      cacheTtl: cacheTtl,
+      cacheEverything: true,
+    },
   });
+  const data: dataJson = await response.json();
+  return json({
+    data,
+  });
+};
+
+type dataJson = {
+  args: Record<string, unknown>;
+  data: string;
+  files: Record<string, unknown>;
+  form: Record<string, unknown>;
+  headers: {
+    Accept: string;
+    "Accept-Encoding": string;
+    "Accept-Language": string;
+    "Cache-Control": string;
+    Dnt: string;
+    Host: string;
+    Pragma: string;
+    "Sec-Ch-Ua": string;
+    "Sec-Ch-Ua-Mobile": string;
+    "Sec-Ch-Ua-Platform": string;
+    "Sec-Fetch-Dest": string;
+    "Sec-Fetch-Mode": string;
+    "Sec-Fetch-Site": string;
+    "Sec-Fetch-User": string;
+    "Sec-Gpc": string;
+    "Upgrade-Insecure-Requests": string;
+    "User-Agent": string;
+    "X-Amzn-Trace-Id": string;
+  };
+  origin: string;
+  url: string;
 };
