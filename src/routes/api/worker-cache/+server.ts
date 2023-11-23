@@ -2,7 +2,7 @@
 import { json, type RequestHandler } from "@sveltejs/kit";
 
 export const GET: RequestHandler = async ({ platform }) => {
-  const cacheTtl = 180; // Attempt to set cache TTL to 180 seconds
+  const cacheTtl = 60; // set cache TTL to 1 min
 
   // The following is a speculative attempt; typically, platform.cf doesn't provide this capability.
   const response = await fetch("https://httpbin.org/delay/0.3", {
@@ -11,13 +11,10 @@ export const GET: RequestHandler = async ({ platform }) => {
       cacheEverything: true,
     },
   });
-  const platformObj = JSON.stringify(platform.cf);
-  const caches = platform?.caches;
+
   const data: dataJson = await response.json();
   return json({
     data,
-    platformObj,
-    caches,
   });
 };
 

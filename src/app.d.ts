@@ -10,6 +10,10 @@ declare global {
         waitUntil(promise: Promise<unknown>): void;
       };
       caches: CacheStorage & { default: Cache };
+      cf: {
+        cacheTtl: number;
+        cacheEverything: boolean;
+      };
     }
   }
 }
