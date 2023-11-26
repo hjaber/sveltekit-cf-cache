@@ -1,7 +1,7 @@
 // src/routes/api/hyperdrive/+server.ts
 import { json, type RequestHandler } from "@sveltejs/kit";
-import { Client } from "pg";
-export const prerender = true;
+import pg from "pg";
+const { Client } = pg;
 
 export const GET: RequestHandler = async ({ platform }) => {
   const client = new Client({
