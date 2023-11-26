@@ -5,6 +5,7 @@ declare global {
     interface Platform {
       env: {
         COUNTER: DurableObjectNamespace;
+        HYPERDRIVE: Hyperdrive;
       };
       context: {
         waitUntil(promise: Promise<unknown>): void;

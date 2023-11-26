@@ -16,6 +16,7 @@
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/adapter-cloudflare": "^2.3.3",
     "@sveltejs/kit": "^1.27.6",
+    "@types/pg": "^8.10.9",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.28.0",
@@ -27,5 +28,8 @@
     "vite": "^4.4.2",
     "wrangler": "^3.15.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "pg": "^8.11.3"
+  }
 }
