@@ -20,7 +20,7 @@ export default {
 				await client.connect();
 				const result = await client.query({ text: sqlQuery });
 
-				return new Response(JSON.stringify({ result: result }), {
+				return new Response(JSON.stringify(result.rows), {
 					headers: { 'Content-Type': 'application/json' },
 				});
 			} else {
