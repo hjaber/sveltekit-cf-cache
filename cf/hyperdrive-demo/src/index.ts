@@ -6,39 +6,29 @@ export interface Env {
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-		const client = new Client({ connectionString: env.HYPERDRIVE.connectionString });
 		try {
-			await client.connect();
-			let sqlQuery: string | null = null;
+			// Check if the request has a body and contains a SQL query
+			if (request.method === 'POST' && request.headers.get('Content-Type') === 'application/json') {
+				const requestBody: { query: string } = await request.json();
+				const sqlQuery = requestBody.query;
 
-			if (request.method === 'POST') {
-				try {
-					const requestBody: { query?: string } = await request.json();
-					if (requestBody && typeof requestBody.query === 'string') {
-						sqlQuery = requestBody.query;
-					}
-				} catch (e) {
-					return new Response('Invalid request body', { status: 400 });
+				if (!sqlQuery) {
+					throw new Error('No SQL query provided in the request body');
 				}
-			} else if (request.method === 'GET') {
-				const url = new URL(request.url);
-				sqlQuery = url.searchParams.get('query');
+
+				const client = new Client({ connectionString: env.HYPERDRIVE.connectionString });
+				await client.connect();
+				const result = await client.query({ text: sqlQuery });
+
+				return new Response(JSON.stringify({ result: result }), {
+					headers: { 'Content-Type': 'application/json' },
+				});
 			} else {
-				return new Response('Invalid request method', { status: 405 });
+				throw new Error('Invalid request method or content type');
 			}
-
-			if (!sqlQuery) {
-				return new Response('No SQL query provided', { status: 400 });
-			}
-
-			let result = await client.query(sqlQuery);
-			return new Response(JSON.stringify(result.rows), { headers: { 'Content-Type': 'application/json' } });
 		} catch (e) {
-			if (e instanceof Error) {
-				console.log(e.message);
-				return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
-			}
-			return new Response('An unexpected error occurred', { status: 500 });
+			console.log(e);
+			return new Response(JSON.stringify({ error: (e as Error).message }), { status: 500 });
 		}
 	},
 };
