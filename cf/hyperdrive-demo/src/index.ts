@@ -17,10 +17,19 @@ export default {
 				await client.connect();
 				// Use prepared statements or parameterized queries for security
 				let result = await client.query({ text: sql });
-				return new Response(JSON.stringify(result.rows));
+				return new Response(JSON.stringify(result.rows), {
+					headers: {
+						'Content-Type': 'application/json', // Ensure Content-Type is set to application/json
+					},
+				});
 			} catch (e) {
 				console.error(e);
-				return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
+				return new Response(JSON.stringify({ error: 'Server error' }), {
+					status: 500,
+					headers: {
+						'Content-Type': 'application/json', // Ensure Content-Type is set to application/json
+					},
+				});
 			}
 		} else {
 			return new Response(JSON.stringify({ error: 'Invalid request content type' }), { status: 400 });
