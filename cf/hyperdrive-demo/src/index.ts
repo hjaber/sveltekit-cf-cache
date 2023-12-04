@@ -8,25 +8,22 @@ export interface Env {
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-		console.log(JSON.stringify(env));
-		// Create a database client that connects to your database via Hyperdrive
-		// Hyperdrive generates a unique connection string you can pass to
-		// supported drivers, including node-postgres, Postgres.js, and the many
-		// ORMs and query builders that use these drivers.
-		const client = new Client({ connectionString: env.HYPERDRIVE.connectionString });
-
-		try {
-			// Connect to your database
-			await client.connect();
-
-			// Test query
-			let result = await client.query({ text: 'SELECT * FROM todos' });
-
-			// Return result rows as JSON
-			return Response.json(result.rows);
-		} catch (e) {
-			console.log(e);
-			return Response.json({ error: JSON.stringify(e) }, { status: 500 });
+		if (request.headers.get('content-type')?.includes('application/json')) {
+			const body: { sql: string } = await request.json();
+			// Ensure SQL is properly sanitized or use prepared statements/stored procedures
+			const { sql } = body;
+			const client = new Client({ connectionString: env.HYPERDRIVE.connectionString });
+			try {
+				await client.connect();
+				// Use prepared statements or parameterized queries for security
+				let result = await client.query({ text: sql });
+				return new Response(JSON.stringify(result.rows));
+			} catch (e) {
+				console.error(e);
+				return new Response(JSON.stringify({ error: 'Server error' }), { status: 500 });
+			}
+		} else {
+			return new Response(JSON.stringify({ error: 'Invalid request content type' }), { status: 400 });
 		}
 	},
 };
