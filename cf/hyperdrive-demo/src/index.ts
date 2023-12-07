@@ -1,35 +1,33 @@
 import { Client } from 'pg';
 
 export interface Env {
-	// If you set another name in wrangler.toml as the value for 'binding',
-	// replace "HYPERDRIVE" with the variable name you defined.
 	HYPERDRIVE: Hyperdrive;
 }
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-		// const body: { sql: string } = await request.json();
-		// // Ensure SQL is properly sanitized or use prepared statements/stored procedures
-		// const { sql } = body;
 		const query = new URL(request.url).searchParams.get('query');
-		// if (!query) {return}
+		if (!query) {
+			return new Response(JSON.stringify({ error: 'Invalid request' }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+
 		const client = new Client({ connectionString: env.HYPERDRIVE.connectionString });
 		try {
 			await client.connect();
-			// Use prepared statements or parameterized queries for security
-			let result = await client.query({ text: query });
+			const result = await client.query({ text: query });
+			await client.end();
+
 			return new Response(JSON.stringify(result.rows), {
-				headers: {
-					'Content-Type': 'application/json', // Ensure Content-Type is set to application/json
-				},
+				headers: { 'Content-Type': 'application/json' },
 			});
 		} catch (e) {
 			console.error(e);
 			return new Response(JSON.stringify({ error: 'Server error' }), {
 				status: 500,
-				headers: {
-					'Content-Type': 'application/json', // Ensure Content-Type is set to application/json
-				},
+				headers: { 'Content-Type': 'application/json' },
 			});
 		}
 	},
