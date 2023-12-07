@@ -8,33 +8,29 @@ export interface Env {
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-		if (request.headers.get('content-type')?.includes('application/json')) {
-			// const body: { sql: string } = await request.json();
-			// // Ensure SQL is properly sanitized or use prepared statements/stored procedures
-			// const { sql } = body;
-			const query = new URL(request.url).searchParams.get('query');
-			// if (!query) {return}
-			const client = new Client({ connectionString: env.HYPERDRIVE.connectionString });
-			try {
-				await client.connect();
-				// Use prepared statements or parameterized queries for security
-				let result = await client.query({ text: query });
-				return new Response(JSON.stringify(result.rows), {
-					headers: {
-						'Content-Type': 'application/json', // Ensure Content-Type is set to application/json
-					},
-				});
-			} catch (e) {
-				console.error(e);
-				return new Response(JSON.stringify({ error: 'Server error' }), {
-					status: 500,
-					headers: {
-						'Content-Type': 'application/json', // Ensure Content-Type is set to application/json
-					},
-				});
-			}
-		} else {
-			return new Response(JSON.stringify({ error: 'Invalid request content type' }), { status: 400 });
+		// const body: { sql: string } = await request.json();
+		// // Ensure SQL is properly sanitized or use prepared statements/stored procedures
+		// const { sql } = body;
+		const query = new URL(request.url).searchParams.get('query');
+		// if (!query) {return}
+		const client = new Client({ connectionString: env.HYPERDRIVE.connectionString });
+		try {
+			await client.connect();
+			// Use prepared statements or parameterized queries for security
+			let result = await client.query({ text: query });
+			return new Response(JSON.stringify(result.rows), {
+				headers: {
+					'Content-Type': 'application/json', // Ensure Content-Type is set to application/json
+				},
+			});
+		} catch (e) {
+			console.error(e);
+			return new Response(JSON.stringify({ error: 'Server error' }), {
+				status: 500,
+				headers: {
+					'Content-Type': 'application/json', // Ensure Content-Type is set to application/json
+				},
+			});
 		}
 	},
 };
