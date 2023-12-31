@@ -12,10 +12,6 @@
   <a href="/prerender">Prerender</a>
   <a href="/benchmark">benchmark</a>
 </nav>
-
-<nav class="flex gap-4">
-  {@html data.nav}
-</nav>
 <slot />
 
 <style>
