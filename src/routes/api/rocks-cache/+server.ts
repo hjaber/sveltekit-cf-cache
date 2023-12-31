@@ -10,7 +10,7 @@ export const GET: RequestHandler = async ({ platform }) => {
       cacheEverything: true,
     },
   });
-  const data: dataJson = await response.json();
+  const data = await response.json();
   return json({
     data,
   });
